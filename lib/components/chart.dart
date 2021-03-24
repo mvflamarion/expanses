@@ -1,7 +1,7 @@
-import 'package:expanses/components/chart_bar.dart';
-import 'package:expanses/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../models/transaction.dart';
+import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransaction;
@@ -19,9 +19,9 @@ class Chart extends StatelessWidget {
       for (var i = 0; i < recentTransaction.length; i++) {
         bool sameDay = recentTransaction[i].date.day == weekDay.day;
         bool sameMonth = recentTransaction[i].date.month == weekDay.month;
-        bool sameYaer = recentTransaction[i].date.year == weekDay.year;
+        bool sameYear = recentTransaction[i].date.year == weekDay.year;
 
-        if (sameDay && sameMonth && sameYaer) {
+        if (sameDay && sameMonth && sameYear) {
           totalSum += recentTransaction[i].value;
         }
       }
@@ -34,10 +34,9 @@ class Chart extends StatelessWidget {
   }
 
   double get _weekTotalValue {
-    return groupedTransactions.fold(
-      0.0,
-      (sum, tr) => sum + tr['value'],
-    );
+    return groupedTransactions.fold(0.0, (sum, tr) {
+      return sum + tr['value'];
+    });
   }
 
   @override
@@ -48,20 +47,17 @@ class Chart extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Row(
-          children: groupedTransactions
-              .map(
-                (e) => Flexible(
-                  fit: FlexFit.tight,
-                  child: ChartBar(
-                    label: e['day'],
-                    value: e['value'],
-                    percentage: _weekTotalValue == 0
-                        ? 0
-                        : (e['value'] as double) / _weekTotalValue,
-                  ),
-                ),
-              )
-              .toList(),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: groupedTransactions.map((tr) {
+            return Flexible(
+              fit: FlexFit.tight,
+              child: ChartBar(
+                label: tr['day'],
+                value: tr['value'],
+                percentage: _weekTotalValue == 0 ? 0 : (tr['value'] as double) / _weekTotalValue,
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
